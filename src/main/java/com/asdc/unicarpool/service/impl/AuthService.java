@@ -13,7 +13,7 @@ import com.asdc.unicarpool.service.IAuthService;
 import com.asdc.unicarpool.service.IVerificationService;
 import com.asdc.unicarpool.util.EmailUtil.EmailUtil;
 import com.asdc.unicarpool.util.TokenUtil.ITokenUtil;
-import com.asdc.unicarpool.util.TokenUtil.JwtUtilI;
+import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +36,7 @@ public class AuthService implements IAuthService {
     @Autowired
     public AuthService(IUserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtUtilI jwtUtil,
+                       JwtUtil jwtUtil,
                        EmailUtil emailUtil,
                        VerificationService verificationService
     ) {

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtUtilI implements ITokenUtil {
+public class JwtUtil implements ITokenUtil {
 
     @Value("${jwt.secret}")
     private String secret;

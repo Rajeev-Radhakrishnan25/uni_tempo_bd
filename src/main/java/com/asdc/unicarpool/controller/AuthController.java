@@ -7,7 +7,7 @@ import com.asdc.unicarpool.dto.response.BaseResponse;
 import com.asdc.unicarpool.dto.response.LoginResponse;
 import com.asdc.unicarpool.exception.InvalidArgumentException;
 import com.asdc.unicarpool.service.IAuthService;
-import com.asdc.unicarpool.util.TokenUtil.JwtUtilI;
+import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class AuthController extends BaseController {
     private final IAuthService authService;
 
     @Autowired
-    public AuthController(IAuthService authService, JwtUtilI jwtUtil) {
+    public AuthController(IAuthService authService, JwtUtil jwtUtil) {
         super(jwtUtil);
         this.authService = authService;
     }

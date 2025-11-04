@@ -3,14 +3,14 @@ package com.asdc.unicarpool.controller;
 import com.asdc.unicarpool.constant.AppConstant;
 import com.asdc.unicarpool.exception.InvalidTokenException;
 import com.asdc.unicarpool.util.TokenUtil.ITokenUtil;
-import com.asdc.unicarpool.util.TokenUtil.JwtUtilI;
+import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 
 public abstract class BaseController {
 
     private final ITokenUtil jwtUtil;
 
-    public BaseController(JwtUtilI jwtUtil) {
+    public BaseController(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 

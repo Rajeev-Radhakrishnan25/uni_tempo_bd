@@ -3,7 +3,7 @@ package com.asdc.unicarpool.config;
 import com.asdc.unicarpool.constant.AppConstant;
 import com.asdc.unicarpool.exception.InvalidTokenException;
 import com.asdc.unicarpool.util.TokenUtil.ITokenUtil;
-import com.asdc.unicarpool.util.TokenUtil.JwtUtilI;
+import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ITokenUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtUtilI jwtUtil, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }

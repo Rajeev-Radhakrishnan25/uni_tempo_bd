@@ -5,8 +5,7 @@ import com.asdc.unicarpool.dto.request.UserTypeRequest;
 import com.asdc.unicarpool.dto.response.BaseResponse;
 import com.asdc.unicarpool.dto.response.UserResponse;
 import com.asdc.unicarpool.service.IUserService;
-import com.asdc.unicarpool.util.EmailUtil.EmailUtil;
-import com.asdc.unicarpool.util.TokenUtil.JwtUtilI;
+import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class UserController extends BaseController {
 
     private final IUserService userService;
-    
-    @Autowired
-    EmailUtil emailUtil;
 
     @Autowired
-    public UserController(IUserService userService, JwtUtilI jwtUtil) {
+    public UserController(IUserService userService, JwtUtil jwtUtil) {
         super(jwtUtil);
         this.userService = userService;
     }
