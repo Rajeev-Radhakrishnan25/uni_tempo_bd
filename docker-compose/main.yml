@@ -1,0 +1,8 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: sanifali/unicarpool:latest
+    ports:
+      - "8080:8080"

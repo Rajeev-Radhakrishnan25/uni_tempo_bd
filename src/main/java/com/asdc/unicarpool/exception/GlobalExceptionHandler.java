@@ -118,4 +118,10 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationException(ValidationException ex) {
+        Map<String, Object> errorResponse = createErrorResponse(
+                HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 }

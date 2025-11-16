@@ -1,0 +1,26 @@
+version: '3.2'
+services:
+  sent-poland:
+    container_name: unicarpool
+    image: sanifali/unicarpool:latest
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1G
+    environment:
+      - DB_HOST=$DB_HOST
+      - DB_PORT=$DB_PORT
+      - DB_DATABASE=$DB_DATABASE
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - JWT_SECRET=$JWT_SECRET
+      - JWT_EXPIRY=$JWT_EXPIRY
+      - APPLICATION_EMAIL=$APPLICATION_EMAIL
+      - APPLICATION_EMAIL_PASSWORD=$APPLICATION_EMAIL_PASSWORD
+      - APPLICATION_EMAIL_DEBUG=$APPLICATION_EMAIL_DEBUG
+      - LOG_LEVEL=$LOG_LEVEL
+      - JAVA_TOOL_OPTIONS=-Xmx${CONTAINER_MEMORY:-512}m
+    ports:
+      - "8080:8080"
+    restart: on-failure

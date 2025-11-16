@@ -28,6 +28,7 @@ public class AppConstant {
         public static class Templates {
             public static final String VERIFICATION_EMAIL_TEMPLATE = "verification-code";
             public static final String FORGET_PASSWORD_TEMPLATE = "forget-password";
+            public static final String RIDE_REQUEST_CHANGE_TEMPLATE = "ride-request-status-update";
         }
 
         public static class EmailSubjects {

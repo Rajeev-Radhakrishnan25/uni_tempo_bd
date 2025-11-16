@@ -5,7 +5,6 @@ plugins {
 }
 
 group = 'com.asdc'
-version = '0.0.1-SNAPSHOT'
 description = 'Carpool Backend'
 
 java {

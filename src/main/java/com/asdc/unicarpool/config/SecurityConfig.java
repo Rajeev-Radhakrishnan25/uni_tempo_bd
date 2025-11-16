@@ -33,8 +33,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/user/register", "/api/v1/auth/login", "/api/v1/auth/verification-code", "api/v1/auth/verify-code","api/v1/auth/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/user/register", "/api/v1/auth/login", "/api/v1/auth/verification-code", "/api/v1/auth/verify-code","/api/v1/auth/**", "/api/v1/rider/ride/active").permitAll()
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().authenticated()
                 )
