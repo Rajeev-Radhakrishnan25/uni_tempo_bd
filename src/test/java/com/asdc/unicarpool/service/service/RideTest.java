@@ -4,8 +4,10 @@ import com.asdc.unicarpool.dto.request.CreateRideRequest;
 import com.asdc.unicarpool.dto.response.RideResponse;
 import com.asdc.unicarpool.exception.InvalidArgumentException;
 import com.asdc.unicarpool.exception.InvalidCredentialsException;
+import com.asdc.unicarpool.exception.ValidationException;
 import com.asdc.unicarpool.mapper.Mapper;
 import com.asdc.unicarpool.model.Ride;
+import com.asdc.unicarpool.model.RideStatus;
 import com.asdc.unicarpool.model.User;
 import com.asdc.unicarpool.model.UserRole;
 import com.asdc.unicarpool.repository.IRideRepository;
@@ -88,7 +90,6 @@ class RideTest {
                 .availableSeats(3)
                 .meetingPoint("Goldberg CS Building")
                 .rideConditions("No smoking, music allowed")
-                .createdAt(LocalDateTime.now())
                 .build();
         driverBannerId = "B00979961";
     }
@@ -195,7 +196,7 @@ class RideTest {
                 .destination("Dartmouth")
                 .departureDateTime(LocalDateTime.of(2025, 11, 20, 10, 0))
                 .availableSeats(3)
-                .createdAt(LocalDateTime.now())
+                .status("Waiting")
                 .build();
 
         RideResponse response2 = RideResponse.builder()
@@ -206,11 +207,11 @@ class RideTest {
                 .destination("Truro")
                 .departureDateTime(LocalDateTime.of(2025, 11, 25, 14, 30))
                 .availableSeats(2)
-                .createdAt(LocalDateTime.now())
+                .status("Waiting")
                 .build();
 
         when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
-        when(rideRepository.findUpcomingRidesByDriver(eq(testDriver), any(LocalDateTime.class)))
+        when(rideRepository.findUpcomingRidesByDriver(eq(testDriver)))
                 .thenReturn(activeRides);
         when(mapper.map(activeRide1, RideResponse.class)).thenReturn(response1);
         when(mapper.map(activeRide2, RideResponse.class)).thenReturn(response2);
@@ -225,7 +226,7 @@ class RideTest {
         assertEquals("John Doe", result.get(1).getDriverName());
 
         verify(userRepository).findByBannerId(driverBannerId);
-        verify(rideRepository).findUpcomingRidesByDriver(eq(testDriver), any(LocalDateTime.class));
+        verify(rideRepository).findUpcomingRidesByDriver(eq(testDriver));
         verify(mapper).map(activeRide1, RideResponse.class);
         verify(mapper).map(activeRide2, RideResponse.class);
     }
@@ -238,13 +239,13 @@ class RideTest {
             rideService.getActiveRidesByDriver(driverBannerId);
         });
         verify(userRepository).findByBannerId(driverBannerId);
-        verify(rideRepository, never()).findUpcomingRidesByDriver(any(User.class), any(LocalDateTime.class));
+        verify(rideRepository, never()).findUpcomingRidesByDriver(any(User.class));
     }
 
     @Test
     void getActiveRidesByDriver_NoActiveRides_ReturnsEmptyList() {
         when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
-        when(rideRepository.findUpcomingRidesByDriver(eq(testDriver), any(LocalDateTime.class)))
+        when(rideRepository.findUpcomingRidesByDriver(eq(testDriver)))
                 .thenReturn(List.of());
 
         List<RideResponse> result = rideService.getActiveRidesByDriver(driverBannerId);
@@ -253,7 +254,7 @@ class RideTest {
         assertTrue(result.isEmpty());
 
         verify(userRepository).findByBannerId(driverBannerId);
-        verify(rideRepository).findUpcomingRidesByDriver(eq(testDriver), any(LocalDateTime.class));
+        verify(rideRepository).findUpcomingRidesByDriver(eq(testDriver));
     }
 
 
@@ -286,7 +287,7 @@ class RideTest {
                 .destination("Dartmouth")
                 .departureDateTime(LocalDateTime.of(2025, 11, 20, 10, 0))
                 .availableSeats(3)
-                .createdAt(LocalDateTime.now())
+                .status("Waiting")
                 .build();
 
         RideResponse response2 = RideResponse.builder()
@@ -297,7 +298,7 @@ class RideTest {
                 .destination("Truro")
                 .departureDateTime(LocalDateTime.of(2025, 11, 25, 14, 30))
                 .availableSeats(2)
-                .createdAt(LocalDateTime.now())
+                .status("Waiting")
                 .build();
 
         when(rideRepository.listAllActiveRides(any(LocalDateTime.class)))
@@ -332,5 +333,153 @@ class RideTest {
         verify(mapper, never()).map(any(Ride.class), eq(RideResponse.class));
     }
 
+    @Test
+    void updateRideStatus_DriverNotFound_ThrowsException() {
+        Long rideId = 1L;
+        RideStatus newStatus = RideStatus.STARTED;
 
+        when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.empty());
+
+        assertThrows(InvalidCredentialsException.class, () -> {
+            rideService.updateRideStatus(rideId, newStatus, driverBannerId);
+        });
+
+        verify(userRepository).findByBannerId(driverBannerId);
+        verify(rideRepository, never()).findById(any());
+        verify(rideRepository, never()).save(any());
+    }
+
+    @Test
+    void updateRideStatus_RideNotFound_ThrowsException() {
+        Long rideId = 999L;
+        RideStatus newStatus = RideStatus.STARTED;
+
+        when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.empty());
+
+        assertThrows(ValidationException.class, () -> {
+            rideService.updateRideStatus(rideId, newStatus, driverBannerId);
+        });
+
+        verify(rideRepository).findById(rideId);
+        verify(rideRepository, never()).save(any());
+    }
+
+    @Test
+    void updateRideStatus_DriverMismatch_ThrowsException() {
+        Long rideId = 1L;
+        RideStatus newStatus = RideStatus.STARTED;
+
+        User anotherDriver = User.builder()
+                .id(2L)
+                .name("Jane Smith")
+                .bannerId("B00987654")
+                .roles(Set.of(UserRole.DRIVER))
+                .build();
+
+        Ride ride = Ride.builder()
+                .id(rideId)
+                .driver(anotherDriver)
+                .build();
+
+        when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+
+        assertThrows(ValidationException.class, () -> {
+            rideService.updateRideStatus(rideId, newStatus, driverBannerId);
+        });
+
+        verify(rideRepository).findById(rideId);
+        verify(rideRepository, never()).save(any());
+    }
+
+    @Test
+    void updateRideStatus_Success() {
+        Long rideId = 1L;
+        RideStatus newStatus = RideStatus.STARTED;
+
+        Ride ride = Ride.builder()
+                .id(rideId)
+                .driver(testDriver)
+                .status(RideStatus.WAITING)
+                .build();
+
+        when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(rideRepository.save(any(Ride.class))).thenReturn(ride);
+
+        boolean result = rideService.updateRideStatus(rideId, newStatus, driverBannerId);
+
+        assertTrue(result);
+        assertEquals(newStatus, ride.getStatus());
+
+        verify(rideRepository).findById(rideId);
+        verify(rideRepository).save(ride);
+    }
+
+    @Test
+    void updateRideStatus_AlreadyCompleted_ThrowsException() {
+        Long rideId = 1L;
+        RideStatus newStatus = RideStatus.STARTED;
+
+        Ride ride = Ride.builder()
+                .id(rideId)
+                .driver(testDriver)
+                .status(RideStatus.COMPLETED)
+                .build();
+
+        when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+
+        assertThrows(ValidationException.class, () -> {
+            rideService.updateRideStatus(rideId, newStatus, driverBannerId);
+        });
+
+        verify(rideRepository).findById(rideId);
+        verify(rideRepository, never()).save(any());
+    }
+
+    @Test
+    void updateRideStatus_AlreadyCancelled_ThrowsException() {
+        Long rideId = 1L;
+        RideStatus newStatus = RideStatus.STARTED;
+
+        Ride ride = Ride.builder()
+                .id(rideId)
+                .driver(testDriver)
+                .status(RideStatus.CANCELLED)
+                .build();
+
+        when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+
+        assertThrows(ValidationException.class, () -> {
+            rideService.updateRideStatus(rideId, newStatus, driverBannerId);
+        });
+
+        verify(rideRepository).findById(rideId);
+        verify(rideRepository, never()).save(any());
+    }
+
+    @Test
+    void updateRideStatus_NoStartedStatusChange_ThrowsException() {
+        Long rideId = 1L;
+        RideStatus newStatus = RideStatus.COMPLETED;
+
+        Ride ride = Ride.builder()
+                .id(rideId)
+                .driver(testDriver)
+                .status(RideStatus.WAITING)
+                .build();
+
+        when(userRepository.findByBannerId(driverBannerId)).thenReturn(Optional.of(testDriver));
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+
+        assertThrows(ValidationException.class, () -> {
+            rideService.updateRideStatus(rideId, newStatus, driverBannerId);
+        });
+
+        verify(rideRepository).findById(rideId);
+        verify(rideRepository, never()).save(any());
+    }
 }

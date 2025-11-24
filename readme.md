@@ -67,3 +67,37 @@
         - Impl: Rider not found Sanif Ali <sn771767@dal.ca> 15ec4cf5b961580dc4a40e9cde403b1bdaa713dd
         - Test: Success and no ride request found Sanif Ali <sn771767@dal.ca> 63f363ab8bfdbe1cc401999a3d68d70f13c5cd54
         - Impl: Success and no ride request found Sanif Ali <sn771767@dal.ca> f78ce79101dcee8bb90b279bc381f3052f766867
+
+## 83 -> T8: 3. Backend | Update Ride Status by Driver
+        - Test: Driver not found Sanif Ali <sn771767@dal.ca> 4e4a1659061795fbb03e5519ddbeb8acb25d669c
+        - Impl: Driver not found Sanif Ali <sn771767@dal.ca> 035c4c1029b77764f760ec6d02d7d76291c1e091
+        - Test: Ride Not found Sanif Ali <sn771767@dal.ca> 572065b1a70d97ebfdc8477a70fcafdf726b46f8
+        - Impl: Ride not found Sanif Ali <sn771767@dal.ca> 8b8d76c8bf4a486ba0fe73e86d96aa9421637615
+        - Test: Driver Mismatch Sanif Ali <sn771767@dal.ca> 556d9019344a1bd573b502f0d8c231cfc7c862b9
+        - Test: Driver Mismatch Sanif Ali <sn771767@dal.ca> a0b449441d2881e500a3c2955b31a64e802dd348
+        - Impl: Driver Mismatch Sanif Ali <sn771767@dal.ca> 2137ee19e03edd76bc0af7c60ce613225878b81d
+        - Test: Update Status success Sanif Ali <sn771767@dal.ca> 9622cfb3a1bcd143c3c350f6aacc7920a772f5aa
+        - Impl: Update Status success Sanif Ali <sn771767@dal.ca> 08af06fd2acd8e915220c417934974794ce68976
+        - Test: Already Completed Ride Sanif Ali <sn771767@dal.ca> 4663d70ae13c524de4ab038fac6409f25b600a8d
+        - Impl: Already Completed Ride Sanif Ali <sn771767@dal.ca> 48a5b8dd8d976014f87e2181ef26aad30a5e3a3f
+        - Test: Mark not started ride as complete Sanif Ali <sn771767@dal.ca> 0e0a68a4051736ada0648966faf83f115b33d95c
+        - Impl: Mark not started ride as complete Sanif Ali <sn771767@dal.ca> 325d792fab44a20d949e0595e837cddbcfd5c85a
+
+## 84 -> T8. 5. Backend | List all current rides for Ride
+        - Test: No rider found Sanif Ali <sn771767@dal.ca> ced982efea20c36d8df1d03f82788927a02cf407
+        - Impl: No rider found Sanif Ali <sn771767@dal.ca> ab66247673f5818ab1de19a7a37282dba5b1e347
+        - Test: No current booking Sanif Ali <sn771767@dal.ca> f20d38539dbe5af1290c074fd1dec88871f3cedf
+        - Test: get Current booking success Sanif Ali <sn771767@dal.ca> c8e5765e283b7425ddbd6d05a19232b2f3a3fc8f
+        - Test: Updated response type Sanif Ali <sn771767@dal.ca> 84a05942c46dfd56e7622298d0677a5a6c4e0274
+        - Impl: Get current booking for rider success and no current booking Sanif Ali <sn771767@dal.ca> 8bf9a52699d49a78d230c61bbf66654bec39e43a
+
+
+## 66 -> T2: Ride posting | List all ride for drivers in rider interface
+        - added test case and initialized get all activerides Mostafaa Abdelaziz 4a4a598efeed98633c2ec2a901e2d45abae626f5
+        - added more implementations to ride service as both test cases were failing now passing Mostafaa Abdelaziz 3c8134b093a344822c91bd4a69c10dcd74cac74c
+        - added ridercontroller pathway for getactive rides and everything connected and tested frontend Mostafaa Abdelaziz 810e5dc7f357831c4e4172909c319094283bdbda
+
+## Testing for the services we developed BEFORE TDD introduction in Lab
+        - added all test cases for userservice Mostafaa Abdelaziz 7aff3aede21cb3cece1c82a45c5491f5477a457f
+        - finished verification test Mostafaa Abdelaziz 43d9b70519b92dc5ea4d7913a2f8b33c515cad24
+        - Test: AuthServiceTest,UserServiceTest,VerificationServiceTest completed Mostafaa Abdelaziz 61f9e5ff317e38ddad25f9be6b5ef8db173ab1e4

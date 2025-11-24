@@ -4,8 +4,10 @@ import com.asdc.unicarpool.dto.request.CreateRideRequest;
 import com.asdc.unicarpool.dto.response.RideResponse;
 import com.asdc.unicarpool.exception.InvalidArgumentException;
 import com.asdc.unicarpool.exception.InvalidCredentialsException;
+import com.asdc.unicarpool.exception.ValidationException;
 import com.asdc.unicarpool.mapper.Mapper;
 import com.asdc.unicarpool.model.Ride;
+import com.asdc.unicarpool.model.RideStatus;
 import com.asdc.unicarpool.model.User;
 import com.asdc.unicarpool.model.UserRole;
 import com.asdc.unicarpool.repository.IRideRepository;
@@ -73,20 +75,22 @@ public class RideService implements IRideService {
         User driver = userRepository.findByBannerId(driverBannerId)
                 .orElseThrow(() -> new InvalidCredentialsException("Driver not found"));
 
-        List<Ride> activeRides = rideRepository.findUpcomingRidesByDriver(driver, LocalDateTime.now());
+        List<Ride> activeRides = rideRepository.findUpcomingRidesByDriver(driver);
 
         return activeRides.stream()
                 .map(ride -> {
                     RideResponse response = mapper.map(ride, RideResponse.class);
                     response.setDriverName(ride.getDriver().getName());
                     response.setDriverId(ride.getDriver().getBannerId());
+                    response.setStatus(ride.getStatus().getDisplayName());
                     return response;
                 })
                 .collect(Collectors.toList());
     }
 
-
+    @Override
     public List<RideResponse> getAllActiveRides(String bannerId){
+
         List<Ride> activeRides = rideRepository.listAllActiveRides(LocalDateTime.now());
 
         return activeRides.stream()
@@ -95,9 +99,35 @@ public class RideService implements IRideService {
                     RideResponse response = mapper.map(ride, RideResponse.class);
                     response.setDriverName(ride.getDriver().getName());
                     response.setDriverId(ride.getDriver().getBannerId());
+                    response.setStatus(ride.getStatus().getDisplayName());
                     return response;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean updateRideStatus(Long rideId, RideStatus newStatus, String driverBannerId) {
+        User driver = userRepository.findByBannerId(driverBannerId)
+                .orElseThrow(() -> new InvalidCredentialsException("Driver not found"));
+
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(()->new ValidationException("Ride not found"));
+
+        if (!ride.getDriver().getBannerId().equals(driver.getBannerId())) {
+            throw new ValidationException("Driver is not authorized to update this ride");
+        }
+
+        if( ride.getStatus() == RideStatus.COMPLETED || ride.getStatus() == RideStatus.CANCELLED) {
+            throw new ValidationException("Cannot update a completed or cancelled ride");
+        }
+        if (ride.getStatus() == RideStatus.WAITING && newStatus == RideStatus.COMPLETED) {
+            throw new ValidationException("Cannot mark a waiting ride as completed");
+        }
+
+        ride.setStatus(newStatus);
+        rideRepository.save(ride);
+
+        return true;
     }
 
 }

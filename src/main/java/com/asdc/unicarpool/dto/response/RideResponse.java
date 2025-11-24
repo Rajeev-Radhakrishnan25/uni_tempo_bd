@@ -43,6 +43,7 @@ public class RideResponse extends BaseResponse {
     @JsonProperty("ride_conditions")
     private String rideConditions;
 
-    @JsonProperty("created_at")
-    private LocalDateTime createdAt;
+    @JsonProperty("status")
+    private String status;
+
 }

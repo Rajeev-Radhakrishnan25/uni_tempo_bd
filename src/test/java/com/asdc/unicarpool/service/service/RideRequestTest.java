@@ -716,4 +716,63 @@ class RideRequestTest {
         verify(userRepository).findByBannerId(bannerId);
         verify(rideRequestRepository).findByRiderAndStatusIn(testRider, statuses);
     }
+
+    @Test
+    void getCurrentBookingsForRider_RiderNotFound() {
+        when(userRepository.findByBannerId(bannerId)).thenReturn(Optional.empty());
+        assertThrows(InvalidCredentialsException.class, () -> {
+            rideRequestService.getCurrentBookingsForRider(bannerId);
+        });
+
+        verify(userRepository).findByBannerId(bannerId);
+        verify(rideRequestRepository, never()).findCurrentBookingsForRider(any());
+    }
+
+    @Test
+    void getCurrentBookingsForRider_NoCurrentBooking() {
+        when(userRepository.findByBannerId(bannerId)).thenReturn(Optional.of(testRider));
+        when(rideRequestRepository.findCurrentBookingsForRider(testRider))
+                .thenReturn(List.of());
+
+        List<RideRequestResponse> result = rideRequestService.getCurrentBookingsForRider(bannerId);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(userRepository).findByBannerId(bannerId);
+        verify(rideRequestRepository).findCurrentBookingsForRider(testRider);
+    }
+
+    @Test
+    void getCurrentBookingsForRider_Success() {
+        Ride ongoingRide = Ride.builder()
+                .id(1L)
+                .driver(testDriver)
+                .departureLocation("Halifax")
+                .destination("Sydney")
+                .departureDateTime(LocalDateTime.of(2026, 11, 20, 10, 0))
+                .availableSeats(2)
+                .status(RideStatus.STARTED)
+                .isActive(true)
+                .build();
+        RideRequest currentBooking = RideRequest.builder()
+                .id(1L)
+                .ride(ongoingRide)
+                .rider(testRider)
+                .status(RideRequestStatus.ACCEPTED)
+                .message("Current booking")
+                .build();
+
+        when(userRepository.findByBannerId(bannerId)).thenReturn(Optional.of(testRider));
+        when(rideRequestRepository.findCurrentBookingsForRider(testRider))
+                .thenReturn(List.of(currentBooking));
+
+        List<RideRequestResponse> result = rideRequestService.getCurrentBookingsForRider(bannerId);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(RideRequestStatus.ACCEPTED.name(), result.get(0).getStatus());
+
+        verify(userRepository).findByBannerId(bannerId);
+        verify(rideRequestRepository).findCurrentBookingsForRider(testRider);
+    }
 }

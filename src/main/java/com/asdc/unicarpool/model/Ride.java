@@ -45,4 +45,8 @@ public class Ride {
     @Column(name = "ride_conditions", length = 500)
     private String rideConditions;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private RideStatus status = RideStatus.WAITING;
 }

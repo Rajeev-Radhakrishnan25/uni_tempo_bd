@@ -50,4 +50,11 @@ public class RiderController extends BaseController {
         List<RideRequestResponse> response = rideRequestService.getRideRequestsByRider(bannerId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/current-bookings")
+    public ResponseEntity<List<RideRequestResponse>> getCurrentBookings(HttpServletRequest request) {
+        String bannerId = extractBannerIdFromToken(request);
+        List<RideRequestResponse> response = rideRequestService.getCurrentBookingsForRider(bannerId);
+        return ResponseEntity.ok(response);
+    }
 }

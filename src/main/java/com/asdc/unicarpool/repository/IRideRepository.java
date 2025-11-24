@@ -12,8 +12,8 @@ import java.util.List;
 
 @Repository
 public interface IRideRepository extends JpaRepository<Ride, Long> {
-    @Query("SELECT r FROM Ride r WHERE r.driver = :driver AND r.departureDateTime > :currentTime")
-    List<Ride> findUpcomingRidesByDriver(@Param("driver") User driver, @Param("currentTime") LocalDateTime currentTime);
+    @Query("SELECT r FROM Ride r WHERE r.driver = :driver AND r.status NOT IN ('COMPLETED', 'CANCELED') ORDER BY r.departureDateTime ASC")
+    List<Ride> findUpcomingRidesByDriver(@Param("driver") User driver);
 
 
     @Query("SELECT r FROM Ride r WHERE r.departureDateTime >= :currentTime")

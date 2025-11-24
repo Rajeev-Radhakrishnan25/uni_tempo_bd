@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -150,6 +151,18 @@ public class RideRequestService implements IRideRequestService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<RideRequestResponse> getCurrentBookingsForRider(String bannerId) {
+        User rider = userRepository.findByBannerId(bannerId)
+                .orElseThrow(() -> new InvalidCredentialsException("Rider not found"));
+
+        List<RideRequest> rideRequests = rideRequestRepository.findCurrentBookingsForRider(rider);
+
+        return rideRequests.stream()
+                .map(this::mapToRideRequestResponse)
+                .collect(Collectors.toList());
+    }
+
     private void sendStatusNotificationToRider(RideRequest request) {
         String subject = request.getStatus() == RideRequestStatus.ACCEPTED ? "Ride Request Accepted - " + appName : "Ride Request Rejected - " + appName;
 
@@ -188,4 +201,5 @@ public class RideRequestService implements IRideRequestService {
         response.setMessage(request.getMessage());
         return response;
     }
+
 }

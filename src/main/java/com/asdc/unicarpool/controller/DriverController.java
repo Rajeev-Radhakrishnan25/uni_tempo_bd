@@ -6,6 +6,7 @@ import com.asdc.unicarpool.dto.response.BaseResponse;
 import com.asdc.unicarpool.dto.response.RideRequestResponse;
 import com.asdc.unicarpool.dto.response.RideResponse;
 import com.asdc.unicarpool.model.RideRequestStatus;
+import com.asdc.unicarpool.model.RideStatus;
 import com.asdc.unicarpool.service.IRideRequestService;
 import com.asdc.unicarpool.service.IRideService;
 import com.asdc.unicarpool.service.impl.RideService;
@@ -85,6 +86,17 @@ public class DriverController extends BaseController {
             return ResponseEntity.badRequest().body(new BaseResponse("Unable to reject ride"));
         } else {
             return ResponseEntity.ok(new BaseResponse("Ride rejected successfully"));
+        }
+    }
+
+    @GetMapping("/ride/{rideId}/status")
+    public ResponseEntity<BaseResponse> updateRideStatus(@PathVariable Long rideId, @RequestParam String status, HttpServletRequest request) {
+        String driverBannerId = extractBannerIdFromToken(request);
+        boolean response = rideService.updateRideStatus(rideId, RideStatus.valueOf(status), driverBannerId);
+        if (!response) {
+            return ResponseEntity.badRequest().body(new BaseResponse("Unable to update ride status"));
+        } else {
+            return ResponseEntity.ok(new BaseResponse("Ride status updated successfully"));
         }
     }
 }
