@@ -40,4 +40,5 @@ public interface IUserService {
      */
     public BaseResponse getUserDetail(String bannerId);
 
+    public BaseResponse updateDriverAvailability(String bannerId, boolean isAvailable);
 }

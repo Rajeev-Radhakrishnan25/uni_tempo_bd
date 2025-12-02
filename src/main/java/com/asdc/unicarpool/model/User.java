@@ -47,5 +47,7 @@ public class User {
     @Column(name = "role")
     private Set<UserRole> roles = new HashSet<>();
 
-
+    @Builder.Default
+    @Column(name = "is_available", nullable = false)
+    private boolean isAvailable = false;
 }

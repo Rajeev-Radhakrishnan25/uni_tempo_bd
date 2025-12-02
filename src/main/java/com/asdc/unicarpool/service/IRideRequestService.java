@@ -3,6 +3,7 @@ package com.asdc.unicarpool.service;
 import com.asdc.unicarpool.dto.request.RideRequestRequest;
 import com.asdc.unicarpool.dto.request.UpdateRideRequestStatusRequest;
 import com.asdc.unicarpool.dto.response.RideRequestResponse;
+import com.asdc.unicarpool.dto.response.RideRequestStatusResponse;
 import com.asdc.unicarpool.model.RideRequest;
 
 import java.util.List;
@@ -17,5 +18,7 @@ public interface IRideRequestService {
 
     List<RideRequestResponse> getRideRequestsByRider(String bannerId);
 
-    List<RideRequestResponse> getCurrentBookingsForRider(String bannerId);
+    List<RideRequestStatusResponse> getConfirmedRides(String bannerId);
+
+    List<RideRequestStatusResponse> getCurrentBookingsForRider(String bannerId);
 }

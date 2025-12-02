@@ -46,4 +46,9 @@ public class RideResponse extends BaseResponse {
     @JsonProperty("status")
     private String status;
 
+    @JsonProperty("type")
+    private String type;
+
+    @JsonProperty("reviewed")
+    private Boolean reviewed;
 }

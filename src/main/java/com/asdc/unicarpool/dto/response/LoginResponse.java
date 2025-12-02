@@ -18,7 +18,7 @@ public class LoginResponse extends BaseResponse {
 
     @Builder.Default
     @JsonProperty("token_type")
-    private String tokenType = AppConstant.Headers.BEARER_PREFIX;
+    private String tokenType = AppConstant.HEADER_BEARER_PREFIX;
 
     @JsonProperty("expires_in")
     private Long expiresIn;

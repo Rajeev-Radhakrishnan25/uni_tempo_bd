@@ -49,4 +49,8 @@ public class Ride {
     @Column(name = "status", nullable = false)
     @Builder.Default
     private RideStatus status = RideStatus.WAITING;
+
+    @Column(name= "reviewed" , nullable = false)
+    @Builder.Default
+    private Boolean reviewed = false;
 }

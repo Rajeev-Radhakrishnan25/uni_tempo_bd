@@ -11,6 +11,7 @@ import com.asdc.unicarpool.repository.IUserRepository;
 import com.asdc.unicarpool.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class UserService implements IUserService, UserDetailsService {
+public class UserService extends BaseService implements IUserService, UserDetailsService {
 
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,7 +43,10 @@ public class UserService implements IUserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByBannerId(username).orElseThrow(() -> new UsernameNotFoundException("User not found with banner ID: " + username));
 
-        Set<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toSet());
+        Set<GrantedAuthority> authorities = user.getRoles()
+                .stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+                .collect(Collectors.toSet());
 
         return org.springframework.security.core.userdetails.User.builder().username(user.getBannerId()).password(user.getPassword()).authorities(authorities).accountExpired(false).accountLocked(false).credentialsExpired(false).disabled(!user.isEmailVerified()).build();
     }
@@ -65,7 +69,7 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public UserResponse updateUser(UserRequest userRequest) {
         log.debug("User Request {}", userRequest);
-        User user = userRepository.findByBannerId(userRequest.getBannerId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, userRequest.getBannerId());
 
         user.setName(userRequest.getFullName());
         user.setEmail(userRequest.getSchoolEmail());
@@ -76,7 +80,7 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public boolean addUserRole(String bannerId, UserRole role) {
         log.debug("BannerId: {}, Role: {}", bannerId, role);
-        User user = userRepository.findByBannerId(bannerId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, bannerId);
 
         if (user.getRoles().contains(role)) {
             return false;
@@ -89,8 +93,23 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public UserResponse getUserDetail(String bannerId) {
         log.debug("Banner Id: {}", bannerId);
-        User user = userRepository.findByBannerId(bannerId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, bannerId);
         return mapper.map(userRepository.save(user), UserResponse.class);
     }
+
+    @Override
+    public BaseResponse updateDriverAvailability(String bannerId, boolean isAvailable){
+        User user = userRepository.findByBannerId(bannerId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if(!user.getRoles().contains(UserRole.DRIVER)){
+            throw new IllegalStateException("User is not Driver");
+        }
+
+        user.setAvailable(isAvailable);
+        userRepository.save(user);
+
+        return mapper.map(userRepository.save(user), BaseResponse.class);
+    }
+
 
 }

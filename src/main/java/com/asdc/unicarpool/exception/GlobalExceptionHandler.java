@@ -22,9 +22,9 @@ public class GlobalExceptionHandler {
 
     private Map<String, Object> createErrorResponse(HttpStatus status, String message) {
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put(AppConstant.ErrorResponse.TIMESTAMP, Instant.now().toString());
-        errorResponse.put(AppConstant.ErrorResponse.STATUS, status.value());
-        errorResponse.put(AppConstant.ErrorResponse.MESSAGE, message);
+        errorResponse.put(AppConstant.ERROR_TIMESTAMP, Instant.now().toString());
+        errorResponse.put(AppConstant.ERROR_STATUS, status.value());
+        errorResponse.put(AppConstant.ERROR_MESSAGE, message);
         return errorResponse;
     }
 

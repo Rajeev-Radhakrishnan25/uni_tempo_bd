@@ -54,4 +54,7 @@ public class RideRequestResponse extends BaseResponse {
     @JsonProperty("departure_date_time")
     private LocalDateTime departureDateTime;
 
+    @JsonProperty("reviewed")
+    private Boolean reviewed;
+
 }

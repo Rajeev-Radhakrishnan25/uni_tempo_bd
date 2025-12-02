@@ -1,50 +1,63 @@
 package com.asdc.unicarpool.constant;
 
 public class AppConstant {
+    // Date/Time Format
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static final class JWT {
-        public static final String BANNER_ID = "bannerId";
-        public static final String EMAIL = "email";
-        public static final String ROLES = "roles";
-        public static final String NAME = "name";
+    // JWT Constants
+    public static final String JWT_BANNER_ID = "bannerId";
+    public static final String JWT_EMAIL = "email";
+    public static final String JWT_ROLES = "roles";
+    public static final String JWT_NAME = "name";
 
-        private JWT() {
-        }
-    }
+    // HTTP Headers
+    public static final String HEADER_AUTHORIZATION = "Authorization";
+    public static final String HEADER_BEARER_PREFIX = "Bearer ";
 
-    public static final class Headers {
-        public static final String AUTHORIZATION = "Authorization";
-        public static final String BEARER_PREFIX = "Bearer ";
-    }
+    // Error Response Keys
+    public static final String ERROR_TIMESTAMP = "timestamp";
+    public static final String ERROR_STATUS = "status";
+    public static final String ERROR_MESSAGE = "message";
 
-    public static final class ErrorResponse {
-        public static final String TIMESTAMP = "timestamp";
-        public static final String STATUS = "status";
-        public static final String MESSAGE = "message";
-    }
+    // Email Templates
+    public static final String EMAIL_TEMPLATE_VERIFICATION = "verification-code";
+    public static final String EMAIL_TEMPLATE_FORGET_PASSWORD = "forget-password";
+    public static final String EMAIL_TEMPLATE_RIDE_REQUEST_CHANGE = "ride-request-status-update";
+    public static final String EMAIL_TEMPLATE_RIDE_STATUS = "ride-status";
 
-    public static final class EmailConstant {
-        public static class Templates {
-            public static final String VERIFICATION_EMAIL_TEMPLATE = "verification-code";
-            public static final String FORGET_PASSWORD_TEMPLATE = "forget-password";
-            public static final String RIDE_REQUEST_CHANGE_TEMPLATE = "ride-request-status-update";
-        }
+    // Email Subjects
+    public static final String EMAIL_SUBJECT_VERIFICATION = "Unicarpool Verification Request";
+    public static final String EMAIL_SUBJECT_FORGET_PASSWORD = "Unicarpool Forget Password Request";
 
-        public static class EmailSubjects {
-            public static final String VERIFICATION_SUBJECT = "Unicarpool Verification Request";
-            public static final String FORGET_PASSWORD_SUBJECT = "Unicarpool Forget Password Request";
-        }
-    }
+    // Rating Constants
+    public static final int MIN_RATING = 1;
+    public static final int MAX_RATING = 5;
 
+    //Verification Code Constants
+    public static final int VERIFICATION_CODE_LENGTH = 6;
+    public static final long VERIFICATION_CODE_EXPIRY_MINS = 15L;
+
+    // Time Conversion Constants
+    public static final long MILLIS_PER_SECOND = 1000L;
+    public static final int SECONDS_PER_MINUTE = 60;
+
+    // Numeric Constants
+    public static final int DECIMAL_BASE = 10;
+
+    // Enums
     public enum VerificationStatus {
         ACTIVE,
         EXPIRED,
-        USED;
+        USED
     }
 
     public enum VerificationType {
         EMAIL,
         FORGET_PASSWORD
+    }
+
+    // Private constructor to prevent instantiation
+    private AppConstant() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }

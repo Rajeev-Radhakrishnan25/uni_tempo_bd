@@ -22,4 +22,10 @@ public interface IRideRequestRepository extends JpaRepository<RideRequest, Long>
 
     @Query("SELECT rr FROM RideRequest rr WHERE rr.rider = :rider AND rr.status = 'ACCEPTED' AND rr.ride.status IN ('WAITING', 'STARTED') ORDER BY rr.ride.departureDateTime ASC")
     List<RideRequest> findCurrentBookingsForRider(User rider);
+
+    @Query("SELECT rr FROM RideRequest rr WHERE rr.rider = :rider AND rr.status = 'ACCEPTED' AND rr.ride.status IN ('COMPLETED') ORDER BY rr.ride.departureDateTime ASC")
+    List<RideRequest> findCompletedBookingsForRider(User rider);
+
+    List<RideRequest> findByRideAndStatus(Ride ride, RideRequestStatus status);
+
 }

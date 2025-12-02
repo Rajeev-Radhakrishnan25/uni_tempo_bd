@@ -1,6 +1,5 @@
-version: '3.2'
 services:
-  sent-poland:
+  unicarpool:
     container_name: unicarpool
     image: sanifali/unicarpool:latest
     deploy:

@@ -3,9 +3,9 @@ package com.asdc.unicarpool.controller;
 import com.asdc.unicarpool.dto.request.UserRequest;
 import com.asdc.unicarpool.dto.request.UserTypeRequest;
 import com.asdc.unicarpool.dto.response.BaseResponse;
+import com.asdc.unicarpool.component.TokenExtractor;
 import com.asdc.unicarpool.dto.response.UserResponse;
 import com.asdc.unicarpool.service.IUserService;
-import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +14,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/user")
-public class UserController extends BaseController {
+public class UserController {
 
     private final IUserService userService;
+    private final TokenExtractor tokenExtractor;
 
     @Autowired
-    public UserController(IUserService userService, JwtUtil jwtUtil) {
-        super(jwtUtil);
+    public UserController(IUserService userService, TokenExtractor tokenExtractor) {
         this.userService = userService;
+        this.tokenExtractor = tokenExtractor;
     }
 
     @PostMapping("/register")
@@ -33,7 +34,7 @@ public class UserController extends BaseController {
     @PostMapping("/add-type")
     public ResponseEntity<BaseResponse> addUserType(@Valid @RequestBody UserTypeRequest userTypeRequest,
                                                     HttpServletRequest request) {
-        String bannerId = extractBannerIdFromToken(request);
+        String bannerId = tokenExtractor.extractBannerIdFromToken(request);
         boolean isAdded = userService.addUserRole(bannerId, userTypeRequest.getRole());
 
         if (!isAdded) {
@@ -47,7 +48,7 @@ public class UserController extends BaseController {
     public ResponseEntity<UserResponse> editUser(@RequestBody UserRequest userRequest,
                                                  HttpServletRequest request) {
 
-        String bannerId = extractBannerIdFromToken(request);
+        String bannerId = tokenExtractor.extractBannerIdFromToken(request);
         userRequest.setBannerId(bannerId);
         UserResponse response = (UserResponse) userService.updateUser(userRequest);
         return ResponseEntity.ok(response);
@@ -55,10 +56,9 @@ public class UserController extends BaseController {
 
     @GetMapping
     public ResponseEntity<UserResponse> getUserDetails(HttpServletRequest request) {
-        String bannerId = extractBannerIdFromToken(request);
+        String bannerId = tokenExtractor.extractBannerIdFromToken(request);
         UserResponse response = (UserResponse) userService.getUserDetail(bannerId);
         return ResponseEntity.ok(response);
     }
-
 }
 

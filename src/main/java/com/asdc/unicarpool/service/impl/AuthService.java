@@ -6,12 +6,10 @@ import com.asdc.unicarpool.dto.response.BaseResponse;
 import com.asdc.unicarpool.dto.response.LoginResponse;
 import com.asdc.unicarpool.exception.InvalidArgumentException;
 import com.asdc.unicarpool.exception.InvalidCredentialsException;
-import com.asdc.unicarpool.exception.ResourceNotFoundException;
 import com.asdc.unicarpool.model.User;
 import com.asdc.unicarpool.repository.IUserRepository;
 import com.asdc.unicarpool.service.IAuthService;
 import com.asdc.unicarpool.service.IVerificationService;
-import com.asdc.unicarpool.util.EmailUtil.EmailUtil;
 import com.asdc.unicarpool.util.TokenUtil.ITokenUtil;
 import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AuthService implements IAuthService {
+public class AuthService extends BaseService implements IAuthService {
 
     @Value("${spring.application.name}")
     private String appName;
@@ -37,7 +35,6 @@ public class AuthService implements IAuthService {
     public AuthService(IUserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil,
-                       EmailUtil emailUtil,
                        VerificationService verificationService
     ) {
         this.userRepository = userRepository;
@@ -49,7 +46,7 @@ public class AuthService implements IAuthService {
     @Override
     public LoginResponse authenticateUser(LoginRequest loginRequest) {
         log.debug("Login Request {}", loginRequest);
-        User user = userRepository.findByBannerId(loginRequest.getBannerId()).orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, loginRequest.getBannerId());
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid credentials");
         }
@@ -63,7 +60,7 @@ public class AuthService implements IAuthService {
 
     @Override
     public BaseResponse resetPassword(String bannerId, String password) {
-        User user = userRepository.findByBannerId(bannerId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, bannerId);
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
         return new BaseResponse("Password reset successfully!");
@@ -73,7 +70,7 @@ public class AuthService implements IAuthService {
     public BaseResponse sendEmailVerificationCode(String bannerId) {
         log.debug("Banner Id: {}", bannerId);
 
-        User user = userRepository.findByBannerId(bannerId).orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, bannerId);
         if (user.isEmailVerified()) throw new InvalidArgumentException("User is already verified");
         verificationService.sendVerificationCode(user, AppConstant.VerificationType.EMAIL);
         return new BaseResponse("Verification Code has been sent successfully");
@@ -99,7 +96,7 @@ public class AuthService implements IAuthService {
     public BaseResponse sendForgetPasswordCode(String bannerId) {
         log.debug("Banner Id: {}", bannerId);
 
-        User user = userRepository.findByBannerId(bannerId).orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, bannerId);
 
         verificationService.sendVerificationCode(user, AppConstant.VerificationType.FORGET_PASSWORD);
         return new BaseResponse("Verification Code has been sent successfully");
@@ -111,7 +108,7 @@ public class AuthService implements IAuthService {
         log.debug("code Id: {}", code);
         log.debug("password Id: {}", password);
 
-        User user = userRepository.findByBannerId(bannerId).orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        User user = findUserByBannerIdOrThrow(userRepository, bannerId);
 
         verificationService.verifyCode(user, code, AppConstant.VerificationType.FORGET_PASSWORD);
 

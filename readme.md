@@ -101,3 +101,70 @@
         - added all test cases for userservice Mostafaa Abdelaziz 7aff3aede21cb3cece1c82a45c5491f5477a457f
         - finished verification test Mostafaa Abdelaziz 43d9b70519b92dc5ea4d7913a2f8b33c515cad24
         - Test: AuthServiceTest,UserServiceTest,VerificationServiceTest completed Mostafaa Abdelaziz 61f9e5ff317e38ddad25f9be6b5ef8db173ab1e4
+
+## 95 -> T8: 8. Backend | Ride Status Change Notification to Rider
+        - Test: No rider found to send email Sanif Ali <sn771767@dal.ca> a7a710a7b03ce1d4d674571e4d215c6ff51c9e00
+        - Impl: No rider found to send email Sanif Ali <sn771767@dal.ca> 62b5bbab37db2a83674072988b29aee102008621
+        - Test: Send Email to all riders whose ride is accepted Sanif Ali <sn771767@dal.ca> d96545a3cd0a2bc088abea9b8709860958c58d3e
+        - Test: Send Email to all riders whose ride is accepted Sanif Ali <sn771767@dal.ca> 6cb7ef39b57e20f31158faa1f25492ec6ebbf92e
+        - Impl: Send Email to all riders whose ride is accepted Sanif Ali <sn771767@dal.ca> 8c90f77c37fd269c4e03b835ffdb333dc05a8dcb
+
+
+#  T6: T6: 1. Backend | Rating and Reviews
+
+        - Impl:created a rating and review entity to communicate with database Mostafaa Abdelaziz  d6651f67b94fbd7415f4aff93d7684843a32c65a
+        - Impl & Test: Added test cases for all methods that will be created and test cases are all failing Mostafaa Abdelaziz f0c3eb8b0734a2160d82e5fe061ad6ea81adafbb
+        - Impl: Added code for the ratings and review and test cases partially pass 3/7 Mostafaa Abdelaziz b7d7fbbf92b86a67dcefb87a92b4db43d26f826d
+        - Test: All test cases pass 7/7, I had a mismatch exception hence why it wasn't working, initialized ratingreviewservice Mostafaa Abdelaziz d32762a74b8f1c45b0781c7fb4289f1c4c8f8cbf
+        - Impl: added submitReview in RiderController and added a new method in rideservice Mostafaa Abdelaziz 75dd7b4e58140cd02230904273a39d5f47d7f200
+        - Test: added test passing 1/1 for the new method getuserbybannerId  Mostafaa Abdelaziz 7d94047c9655632434f5ca0380fe72867bd14e6e
+        - Test: added test passing 2/2 for getuserbybannerid Mostafaa Abdelaziz 86bf58d4880ef64c62f1e192fa6404cf277a76d4
+        - Fix: merging rating and review with latest changes Mostafaa Abdelaziz 6a9146529ef470fb2b57a72ef78a751d70f525d0
+        - Impl: added rating and review changes manually Mostafaa Abdelaziz 43a533ff1128d7fb9c07a40cdf0add30996f8fc3
+        - Test: Added a single when statement to fix 1 none running test 80/80 Mostafaa Abdelaziz 4b3377a681f28141df1228cb3bb8b3c17fc67554
+        - Impl:added reviewed variable in database in front and backend to be stored in database Mostafaa Abdelaziz b3372139a66616cf5fcf8f52d1cf3f15bad29837
+        - Test: added when statement to verify if bannerid is null Mostafaa Abdelaziz 156d18988b7ceade8ad3366cab5a9e72417078fd
+        - Impl: adding reviewed variables in ride so it can be shown in database for retrieval Mostafaa Abdelaziz 9373dca9025ded5fabcf670fc2ac0fcae896f6b0
+        - Impl: added last reviewed variable for checking Mostafaa Abdelaziz 0bc12a1598b34b323aefc30b8b9dfbea01c48265
+        - Impl: added reviewed variable to ratingreview service and ride service and saving them with the rest Mostafaa Abdelaziz eb5a22a184e0c565b6aaa7ce621de13e801d79de
+        - Impl: Frontend service communication for review with backend (working condition) Mostafaa Abdelaziz fc548d2b9b096ea77cbca8a5faba931da02e137c
+        - Test&Impl: added ratingreviewrepository and 8/80 tests fails Mostafaa Abdelaziz 763a6c4690236dbfa5e2adfdf432bc77c6f64174
+        - Impl: inserted review boolean and implemented ratingreviewrepository in riderequestservice Mostafaa Abdelaziz fdc1c2aa3ac7bc9075cfdd40cdc744c93698932b
+        - Impl: mapped rating to each ride Mostafaa Abdelaziz ea722d5c26f78097f88c92486570d8f35a90a715
+        - Test: All test cases pass after new implementation 80/80 Mostafaa Abdelaziz ef052138af636023f4c3b228fdc5b860a7a2680b
+        - Impl: initialized review with booking return for logs Mostafaa Abdelaziz b0ca55f7dc550a23a13d80dc0be1d650a9b6bb23
+        - Impl: Fully functional ratings and review frontend completed Mostafaa Abdelaziz 9b472e5911ffb9193f8a3d69038109755b83e005
+        - Impl: removed unnnecessary log messages as they are not required and implemented review popup USER STORY COMPLETED Mostafaa Abdelaziz c92cd4d374e9fe6eda51ef61432ca9c92fa7c9c9
+        - User Story Complete : Rating and review Mostafaa Abdelaziz 19287cdb3abd74777b8484d4aab9897206230bbf
+
+# T1 : T1. 1 Cab booking backend
+        
+        - Test: backend-cabbooking test fail Divyaxi Rawat 29bbad59c1feedde4ca2b059d10491796deac176
+        - Impl: backend-cabBooking test pass Divyaxi Rawat 57d013689774d731aa8755d71f932f2bf1623218
+        - Test: Added cabbookingservice tests, they fail until i add/modify previous work  Mostafaa Abdelaziz 32d3c495a78785a12d6a5e476d4c9ca10813ad3d
+        - Impl: Added a cab booking repository and implemented findbyridersandstatus Mostafaa Abdelaziz 6f8231cf4c47128a3c9105a9dfa95eae2623d17d
+        - Impl: Added a blank method of findByRolesContainingAndIsAvailableTrue Mostafaa Abdelaziz 6ab2ffcbcd0760b90849386db71c23969b0c541a
+        - Impl: added an isAvailable variable as an extra coloumn in the database for the users for drivers Mostafaa Abdelaziz 70a52b24b12e3e9c128e198bd496d621adb7ad46
+        - Impl: modified the cab booking variables in the database and added estimated fares and eta Mostafaa Abdelaziz 0d139e07f3b53763f74da94318c362b2dcc08e4e
+        - Impl: Modified the enum cabbooking status to remove unused strings to the different statuses Mostafaa Abdelaziz 340cb178f8d9bfe595be0098e437f697dd306782
+        - Impl: added a type variable in ride response for differentiation between cab and carpool Mostafaa Abdelaziz d2e98e67ed18b8771d539fe3051ef65640a945e3
+        - Impl: added an arrival time for cabbooking response Mostafaa Abdelaziz f74251692faee1af31168a09eb0dd6671e400141
+        - Impl: added find available drivers for a future match making feature Mostafaa Abdelaziz 46062626ebaeaf66013d1ac8e174f78c2eb0fc8f
+        - Impl: added updating the drivers availability to be used for a future feature for the front end Mostafaa Abdelaziz 5fead66dfcfcaf8a0f3b6a5b5a7d702a0df02840
+        - Impl: modified existing cabbooking service and added a new feature of the find available driver, 1/3 test passes, riderequest and ridetest are failing Mostafaa Abdelaziz 9d5804a9e8f7c2410d51e6915d3235c81480a35e
+        - Impl & Test: added the new cabbookingrepo, test cases pass Mostafaa Abdelaziz 09fdd2f68f94833e1021f431032d7e1bc05a80a0
+        - Test&Impl: Cab booking fully tested and test cases pass 3/3 Mostafaa Abdelaziz 7251fd1598fc26fc16998d7b9c332d4f2978f778
+        - Impl: implemented feature of update driver availability Mostafaa Abdelaziz f3724ec6ae70a88a7099c1bf95506049c6d8e887
+        - Impl: Made 2 paths in the controllers, one for the availability button for driver, other is to connect with frontend Mostafaa Abdelaziz 516fc0005139d036cb44718c608ebbc69c9b6f25
+        - Impl: added the variables for cabbooking to differentiate it from carpooling Mostafaa Abdelaziz c19f1cc3802de1d0930a01ba4add704602a7fba8
+        - Impl: Added frontend implementation go online button works now Mostafaa Abdelaziz 3bd11316da03c090dbed47d9c4c352795a38636c
+        - Impl: Fixed cab bookings so it now shows in current and completed rides Mostafaa Abdelaziz 5b5bd58cfe32f133728f4b65f95aac26b722658c
+        - Impl: Driver's name is now returned for the cab booking confirmation Mostafaa Abdelaziz 970e6b1ce8d2cca31892894893967f7a15b934b4
+        - Impl: Cab booking frontend and backend Impl, compeleted and fully working Mostafaa Abdelaziz e2547785d07602110362ca8dc8d3a2b97b46677e
+        - Test: Fixed createcabooking success forgot to add driver to the booking all test cases pass Mostafaa Abdelaziz a07841531baef302b9dbbc80d81d951e153ec59f
+        - Impl: Removed unnecessary cabbooking repositories, everything merged and working 85/85 tests Mostafaa Abdelaziz 913515a8d3c3b0e614cd3c244dc7bdf7db3cafa6
+        - Impl: addition of no drivers available if everyones offline Mostafaa Abdelaziz beacbcd929bdb2141947fe821de77213c667d18d
+        - Impl: added fixes that was accidentally removed while merging Mostafaa Abdelaziz 5bf42de48b5d80f1cefa172c0cd58aa28d8b6f3f
+        - Impl: Fixed all required changes needed from sanif Mostafaa Abdelaziz 646477857a2ecac46b1c4a7a64c350f244b20a12
+
+

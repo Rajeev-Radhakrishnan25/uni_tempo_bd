@@ -6,8 +6,8 @@ import com.asdc.unicarpool.dto.request.VerificationCodeRequest;
 import com.asdc.unicarpool.dto.response.BaseResponse;
 import com.asdc.unicarpool.dto.response.LoginResponse;
 import com.asdc.unicarpool.exception.InvalidArgumentException;
+import com.asdc.unicarpool.component.TokenExtractor;
 import com.asdc.unicarpool.service.IAuthService;
-import com.asdc.unicarpool.util.TokenUtil.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-public class AuthController extends BaseController {
+public class AuthController {
 
     private final IAuthService authService;
+    private final TokenExtractor tokenExtractor;
 
     @Autowired
-    public AuthController(IAuthService authService, JwtUtil jwtUtil) {
-        super(jwtUtil);
+    public AuthController(IAuthService authService, TokenExtractor tokenExtractor) {
         this.authService = authService;
+        this.tokenExtractor = tokenExtractor;
     }
 
     @PostMapping("/login")
@@ -37,7 +38,7 @@ public class AuthController extends BaseController {
     @PostMapping("/reset-password")
     public ResponseEntity<BaseResponse> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
                                                       HttpServletRequest request) {
-        String bannerId = extractBannerIdFromToken(request);
+        String bannerId = tokenExtractor.extractBannerIdFromToken(request);
         resetPasswordRequest.setBannerId(bannerId);
         BaseResponse response = authService.resetPassword(resetPasswordRequest.getBannerId(), resetPasswordRequest.getPassword());
         return ResponseEntity.ok(response);
@@ -53,7 +54,9 @@ public class AuthController extends BaseController {
     public ResponseEntity<BaseResponse> verifyCode(@RequestBody VerificationCodeRequest verificationCodeRequest) {
         if (verificationCodeRequest.getCode() == null || verificationCodeRequest.getCode().isEmpty())
             throw new InvalidArgumentException("Verification Code is required");
-        BaseResponse response = authService.verifyEmail(verificationCodeRequest.getBannerId(), Integer.parseInt(verificationCodeRequest.getCode()));
+        String bannerId = verificationCodeRequest.getBannerId();
+        Integer code = Integer.parseInt(verificationCodeRequest.getCode());
+        BaseResponse response = authService.verifyEmail(bannerId, code);
         return ResponseEntity.ok(response);
 
     }
@@ -68,8 +71,12 @@ public class AuthController extends BaseController {
     public ResponseEntity<BaseResponse> recoverPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         if (resetPasswordRequest.getCode() == null || resetPasswordRequest.getCode().isEmpty())
             throw new InvalidArgumentException("Verification Code is required");
-        BaseResponse response = authService.recoverPassword(resetPasswordRequest.getBannerId(), Integer.parseInt(resetPasswordRequest.getCode()), resetPasswordRequest.getPassword());
+        
+        String bannerId = resetPasswordRequest.getBannerId();
+        Integer code = Integer.parseInt(resetPasswordRequest.getCode());
+        String password = resetPasswordRequest.getPassword();
+        
+        BaseResponse response = authService.recoverPassword(bannerId, code, password);
         return ResponseEntity.ok(response);
-
     }
 }

@@ -1,0 +1,140 @@
+stages:
+  - test
+  - build
+  - identify-smells
+  - upload-smells-report
+  - docker-build
+  - deploy
+
+variables:
+  RUNNER_TAG: "unicarpool-runner"
+  PROJECT_PATH: "$CI_PROJECT_DIR/$BACKEND_PATH"
+  CI_CD_PATH: "$CI_PROJECT_DIR/$BACKEND_PATH/ci-cd"
+  DEPLOY_PATH: "/home/deployer/unicarpool-backend-deploy"
+
+test-job:
+  stage: test
+  image: eclipse-temurin:23-jdk-alpine
+  tags:
+    - $RUNNER_TAG
+  before_script:
+    - cd $PROJECT_PATH
+    - chmod +x ./gradlew
+  script:
+    - echo "Running backend tests"
+    - ./gradlew test
+  artifacts:
+    paths:
+      - $PROJECT_PATH/build/test-results/
+  only:
+    - dev
+    - main
+
+build-job:
+  stage: build
+  image: eclipse-temurin:23-jdk-alpine
+  tags:
+    - $RUNNER_TAG
+  before_script:
+    - cd $PROJECT_PATH
+    - chmod +x ./gradlew
+  script:
+    - echo "Building backend"
+    - ./gradlew clean build -x test
+  artifacts:
+    paths:
+    - $PROJECT_PATH/build/libs/*.jar
+  only:
+    - main
+
+docker-build-job:
+  stage: docker-build
+  image: docker:latest
+  tags:
+    - $RUNNER_TAG
+  before_script:
+    - cd $PROJECT_PATH
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+    - docker info
+  script:
+    - echo "Building Docker image"
+    - docker-compose -f docker-compose/main.yml build
+    - docker-compose -f docker-compose/main.yml push
+    - echo "Tagging Docker image with commit SHA"
+    - docker tag sanifali/unicarpool:latest sanifali/unicarpool:$CI_COMMIT_SHORT_SHA
+    - docker push sanifali/unicarpool:$CI_COMMIT_SHORT_SHA
+  after_script:
+    - docker logout
+  only:
+    - main
+
+docker-deploy-job:
+  stage: deploy
+  image: docker:latest
+  tags:
+    - $RUNNER_TAG
+  dependencies:
+    - docker-build-job
+  before_script:
+    - cd $PROJECT_PATH
+    - mkdir -p $DEPLOY_PATH
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+  script:
+    - echo "Deploying application"
+    - cp docker-compose/deploy.yml $DEPLOY_PATH/deploy.yml
+    - |
+      cat > $DEPLOY_PATH/.env << EOF
+      DB_HOST=${DB_HOST}
+      DB_PORT=${DB_PORT}
+      DB_DATABASE=${DB_DATABASE}
+      DB_USER=${DB_USER}
+      DB_PASSWORD=${DB_PASSWORD}
+      JWT_SECRET=${JWT_SECRET}
+      JWT_EXPIRY=${JWT_EXPIRY}
+      APPLICATION_EMAIL=${APPLICATION_EMAIL}
+      APPLICATION_EMAIL_PASSWORD=${APPLICATION_EMAIL_PASSWORD}
+      APPLICATION_EMAIL_DEBUG=${APPLICATION_EMAIL_DEBUG}
+      LOG_LEVEL=${LOG_LEVEL}
+      EOF
+    - cd $DEPLOY_PATH
+    - docker-compose -f deploy.yml pull
+    - docker-compose -f deploy.yml down
+    - docker-compose -f deploy.yml up -d
+    - docker-compose -f deploy.yml ps
+    - echo "Deployment completed successfully"
+  after_script:
+    - docker logout
+  only:
+    - main
+
+identify-smells-job:
+  stage: identify-smells
+  image: openjdk:26-ea-jdk
+  tags:
+    - $RUNNER_TAG
+  before_script:
+    - mkdir -p $CI_CD_PATH/smells/
+  script:
+    - echo "Running DesigniteJava"
+    - java -jar $CI_CD_PATH/DesigniteJava.jar -i $PROJECT_PATH/src -o $CI_CD_PATH/smells/ -d
+  artifacts:
+    paths:
+      - $CI_CD_PATH/smells/
+  only:
+    - dev
+    - main
+
+upload-smells-report-job:
+  stage: upload-smells-report
+  image: python:3.10-alpine
+  tags:
+    - $RUNNER_TAG
+  dependencies:
+    - identify-smells-job
+  before_script:
+    - pip3 install -r $CI_CD_PATH/.quality/requirements.txt
+  script:
+    - python3 $CI_CD_PATH/.quality/push_to_dcode.py $DCODE_PROJECT_ID $DCODE_API_KEY $CI_CD_PATH/smells/ $CI_COMMIT_SHA
+  only:
+    - dev
+    - main

@@ -32,11 +32,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader(AppConstant.Headers.AUTHORIZATION);
+        final String authHeader = request.getHeader(AppConstant.HEADER_AUTHORIZATION);
         String bannerId = null;
         String jwt = null;
-        if (authHeader != null && authHeader.startsWith(AppConstant.Headers.BEARER_PREFIX)) {
-            jwt = authHeader.substring(7);
+        if (authHeader != null && authHeader.startsWith(AppConstant.HEADER_BEARER_PREFIX)) {
+            jwt = authHeader.substring(AppConstant.HEADER_BEARER_PREFIX.length());
             try {
                 bannerId = jwtUtil.extractBannerId(jwt);
             } catch (Exception e) {

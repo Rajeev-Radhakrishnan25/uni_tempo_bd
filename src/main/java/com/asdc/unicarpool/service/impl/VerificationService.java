@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.*;
 
+import static com.asdc.unicarpool.constant.AppConstant.VERIFICATION_CODE_EXPIRY_MINS;
+
 @Service
 @Slf4j
 public class VerificationService implements IVerificationService {
@@ -25,9 +27,6 @@ public class VerificationService implements IVerificationService {
 
     private final IVerificationCodeRepository verificationCodeRepository;
     private final IEmailUtil emailUtil;
-
-    private final Integer EXPIRY_MINUTES = 15;
-    private final Integer VERIFICATION_CODE_SIZE = 6;
 
     @Autowired
     public VerificationService(EmailUtil emailUtil,
@@ -49,7 +48,7 @@ public class VerificationService implements IVerificationService {
         }
 
         Integer code = generateVerificationCode();
-        Instant expiryTime = Instant.now().plusSeconds(EXPIRY_MINUTES * 60);
+        Instant expiryTime = Instant.now().plusSeconds(AppConstant.VERIFICATION_CODE_EXPIRY_MINS * AppConstant.SECONDS_PER_MINUTE);
 
         log.debug("Code Expiry: {}", expiryTime);
         VerificationCode newVerificationCode = VerificationCode.builder()
@@ -68,8 +67,8 @@ public class VerificationService implements IVerificationService {
         templateData.put("user", user.getName());
         templateData.put("verificationCode", code);
 
-        String template = type == AppConstant.VerificationType.EMAIL ? AppConstant.EmailConstant.Templates.VERIFICATION_EMAIL_TEMPLATE : AppConstant.EmailConstant.Templates.FORGET_PASSWORD_TEMPLATE;
-        String subject = type == AppConstant.VerificationType.EMAIL ? AppConstant.EmailConstant.EmailSubjects.VERIFICATION_SUBJECT : AppConstant.EmailConstant.EmailSubjects.FORGET_PASSWORD_SUBJECT;
+        String template = type == AppConstant.VerificationType.EMAIL ? AppConstant.EMAIL_TEMPLATE_VERIFICATION : AppConstant.EMAIL_TEMPLATE_FORGET_PASSWORD;
+        String subject = type == AppConstant.VerificationType.EMAIL ? AppConstant.EMAIL_SUBJECT_VERIFICATION : AppConstant.EMAIL_SUBJECT_FORGET_PASSWORD;
         emailUtil.sendEmail(user.getEmail(), subject, template, templateData);
 
         return true;
@@ -98,8 +97,8 @@ public class VerificationService implements IVerificationService {
     private Integer generateVerificationCode() {
         Random random = new Random();
         int code = 0;
-        for (int i = 0; i < VERIFICATION_CODE_SIZE; i++) {
-            code = (code * 10) + random.nextInt(10);
+        for (int i = 0; i < AppConstant.VERIFICATION_CODE_LENGTH; i++) {
+            code = (code * AppConstant.DECIMAL_BASE) + random.nextInt(AppConstant.DECIMAL_BASE);
         }
         return code;
     }

@@ -29,7 +29,7 @@ public class JwtUtil implements ITokenUtil {
 
     private String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration * 1000);
+        Date expiryDate = new Date(now.getTime() + expiration * AppConstant.MILLIS_PER_SECOND);
 
         return Jwts.builder()
                 .claims(claims)
@@ -51,10 +51,10 @@ public class JwtUtil implements ITokenUtil {
     @Override
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(AppConstant.JWT.BANNER_ID, user.getBannerId());
-        claims.put(AppConstant.JWT.EMAIL, user.getEmail());
-        claims.put(AppConstant.JWT.ROLES, user.getRoles());
-        claims.put(AppConstant.JWT.NAME, user.getName());
+        claims.put(AppConstant.JWT_BANNER_ID, user.getBannerId());
+        claims.put(AppConstant.JWT_EMAIL, user.getEmail());
+        claims.put(AppConstant.JWT_ROLES, user.getRoles());
+        claims.put(AppConstant.JWT_NAME, user.getName());
 
         return createToken(claims, user.getBannerId());
     }
